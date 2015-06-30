@@ -50,7 +50,7 @@ public class ICalculatorTest extends TestCase {
 
 	System.out.println("@Test sum()");
 	int result = calculator.sum(3, 4);
-	assertEquals(8, result);
+	assertEquals(7, result);
     }
 
 
