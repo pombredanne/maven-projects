@@ -62,8 +62,9 @@ def select( con, table ):
   print "# Selecting from table ", table
   print "#" * 44
   
+
   #
-  # 2. Send query to the table passed as arg 
+  # 1. Send query to the table passed as arg 
   #    and get the query result object
   #
   con.query("SELECT * from " + table)
@@ -72,7 +73,7 @@ def select( con, table ):
 
 
   #
-  # 3. Fetch rows from result
+  # 2. Fetch rows from result
   #
   rows = res.fetch_row(maxrows=0, how=1)
   print "# 3. rows has type = ", repr(type(rows))
@@ -84,6 +85,69 @@ def select( con, table ):
 
 
 # end of select()
+
+
+
+
+
+
+
+####
+
+#
+# Function to get the transactions IDs
+#
+def get_trans_ids( con, table ):
+
+  type_2_id = {}
+
+  print "#" * 44
+  print "# Getting transaction IDs "
+  print "#" * 44
+  
+
+  #
+  # 1. Send query to the table passed as arg 
+  #    and get the query result object
+  #
+  con.query("SELECT * from " + table)
+  res = con.store_result()
+  print "# 2. res has type = %s" % repr(type(res))
+
+
+  #
+  # 2. Fetch rows from result
+  #
+  rows = res.fetch_row(maxrows=0, how=1)
+  print "# 3. rows has type = ", repr(type(rows))
+
+  i = 1
+  for row in rows:
+    dic = {}
+    ls = []
+    print "# 3.%d row[%d] = %s" % (i, i, row)
+    for k, v in row.iteritems():
+      #print  (" %s =>  %s" % (k, v) )
+      dic[k] = v    
+    for v in dic.values():
+      ls.append(v)    
+    type_2_id[ls[0]] = int(ls[1])
+
+    i = i + 1
+
+
+  #print  ("## type_2_id ", type_2_id )
+
+  return type_2_id
+
+
+# end of get_trans_ids( con, table )
+
+
+
+
+
+
 
 
 
@@ -237,7 +301,12 @@ if __name__ == "__main__":
   #
   # 3. Get data from DB table
   # 
-  select( con, "transaction_type")
+  type_2_id = get_trans_ids( con, "transaction_type")
+  for k, v in type_2_id.iteritems():
+    print  ("##  type_id[%s] =  %s" % (k, v) )
+
+
+  #select( con, "transaction_type")
 
 
 
