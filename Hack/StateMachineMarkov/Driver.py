@@ -39,6 +39,37 @@ def check_age (dob, info, age):
 
 
 
+def gen_timeline (start_date, num_months):
+
+
+  time_line = [ start_date ]
+
+  start_year  = start_date / 100
+  start_month = start_date % 100
+
+  #print("# Start %i:%i" % (start_year, start_month) )
+
+  year = start_year
+  for i in range(1, num_months):
+
+    month = start_month + i
+    #print("# Process month %i " % (month ))
+
+    if ( month == 13 ):
+      month = 1
+      year += 1
+
+    res = 100*year + month
+
+    #print("#   result = %i " % res)
+
+    time_line.append(res)
+
+  #return time_line
+  return map(str, time_line)
+
+
+
 
 
 #
@@ -294,9 +325,13 @@ Driver.retired     = Retired(mob, date)
 
 
 
+# Example
 #res = check_age(201101, 201511, 5)
 #print("# Check age %i" % res)
-#sys.exit()
+
+# Example
+#res = gen_timeline (201501, 3)
+#print res
 
 
 
