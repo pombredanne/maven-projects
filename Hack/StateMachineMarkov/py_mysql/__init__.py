@@ -34,6 +34,7 @@ def get_connection(server, database ):
   #db = _mysql.connect(host="172.16.0.82", passwd="none", read_default_file="~/.my.cnf", db="one_ng")
   #db = _mysql.connect(host="172.16.0.82", user="root", read_default_file="~/.my.cnf", db="one_ng")
 
+  print ""
   print "#" * 72
   print "# Connecting to database ", database, "on server ", server
   print "#" * 72
@@ -58,6 +59,7 @@ def get_connection(server, database ):
 #
 def select( con, table ):
 
+  print ""
   print "#" * 44
   print "# Selecting from table ", table
   print "#" * 44
@@ -91,9 +93,6 @@ def select( con, table ):
 
 
 
-
-####
-
 #
 # Function to get the transactions IDs
 #
@@ -101,6 +100,7 @@ def get_trans_ids( con, table ):
 
   type_2_id = {}
 
+  print ""
   print "#" * 44
   print "# Getting transaction IDs "
   print "#" * 44
