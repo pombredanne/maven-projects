@@ -152,15 +152,15 @@ def map_type_2_id( con, table ):
 
 
 #
-# Function to map name to IDs
+# Function to map attr name to IDs
 #
-def map_name_2_id( con, table ):
+def map_attr_2_id( con, table, attr ):
 
   name_2_id = {}
 
   print ""
   print "#" * 44
-  print "# Mapping names to IDs "
+  print "# Mapping attr names to IDs "
   print "#" * 44
   
 
@@ -168,7 +168,7 @@ def map_name_2_id( con, table ):
   # 1. Send query to the table passed as arg 
   #    and get the query result object
   #
-  con.query("SELECT name,id from " + table)
+  con.query("SELECT " + attr + ", id from " + table)
   res = con.store_result()
   #print "# 2. res has type = %s" % repr(type(res))
 
@@ -200,7 +200,7 @@ def map_name_2_id( con, table ):
   return name_2_id
 
 
-# end of map_name_2_id( con, table )
+# end of map_attr_2_id( con, table )
 
 
 
@@ -377,9 +377,15 @@ if __name__ == "__main__":
 
 
   # 3.3 cust_id[name] = id 
-  name_2_id = map_name_2_id( con, "customers")
-  for k, v in name_2_id.iteritems():
+  cust_id = map_attr_2_id( con, "customers", "name")
+  for k, v in cust_id.iteritems():
     print  ("##  cust_id[%s] =  %s" % (k, v) )
+
+
+  # 3.4 stat_id[name] = id 
+  stat_id = map_attr_2_id( con, "goal_status",  "status")
+  for k, v in stat_id.iteritems():
+    print  ("##  stat_id[%s] =  %s" % (k, v) )
 
 
 
