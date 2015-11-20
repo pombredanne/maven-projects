@@ -102,7 +102,7 @@ def map_type_2_id( con, table ):
 
   print ""
   print "#" * 44
-  print "# Mapping types to IDs "
+  print "# Mapping types to IDs for table ", table
   print "#" * 44
   
 
@@ -160,7 +160,7 @@ def map_attr_2_id( con, table, attr ):
 
   print ""
   print "#" * 44
-  print "# Mapping attr names to IDs "
+  print "# Mapping attr names to IDs for table ", table
   print "#" * 44
   
 
