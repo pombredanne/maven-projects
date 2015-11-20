@@ -14,6 +14,7 @@ class State:
       self.date = date_
     self.income = 0
     self.expense = 0
+    self.alive = True
 
 
   def __call__(self, info_):
@@ -21,6 +22,7 @@ class State:
     self.date = info_['date']
     self.income = info_['income']
     self.expense = info_['expense']
+    self.alive = info_['alive']
     return self
 
 
