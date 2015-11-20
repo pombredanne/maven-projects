@@ -11,16 +11,12 @@
 #  select( con, table )
 #  insert( con, table, seq )
 #
-# Author:
-#
-#    Gabriel Mateescu
+# Author: Gabriel Mateescu
 #
 
-import sys
-import os
-
-#import _mysql
+import sys, os
 import MySQLdb
+
 
 
 #
@@ -86,7 +82,10 @@ def select( con, table ):
     print "# 3.%d row[%d] = %s" % (i, i, row)
     i = i + 1
 
-# select()
+
+# end of select()
+
+
 
 
 
@@ -168,6 +167,9 @@ def insert( con, table, seq ):
 
 
 
+#
+# Get the DBs
+#
 def get_db_list( con ):
 
 
@@ -177,7 +179,7 @@ def get_db_list( con ):
   print "#" * 44
 
 
-#  try: 
+  #  try: 
 
   con.query("SHOW DATABASES;")
   res = con.store_result()
@@ -191,12 +193,12 @@ def get_db_list( con ):
 
 
 
-#  except MySQLdb.IntegrityError as err:
-#    print( "##\n## Error: {}".format(err) )
-#    print("##")   
-#    pass
+  #except MySQLdb.IntegrityError as err:
+  #    print( "##\n## Error: {}".format(err) )
+  #    print("##")   
+  #    pass
 
-
+# end of get_db_list()
 
 
 
@@ -223,17 +225,24 @@ if __name__ == "__main__":
   # 1. Get connection
   #
   con = get_connection( "172.16.0.82", "one_ng")
+
+
+  #
+  # 2. Get list of DBs
+  #
   get_db_list( con )
 
 
+
   #
-  # 2. Get data from DB table
+  # 3. Get data from DB table
   # 
-  #select( con, "one_ng")
+  select( con, "transaction_type")
+
 
 
   #
-  # 3. Insert into DB table
+  # 4. Insert into DB table
   # 
   #insert( con, "con_data", [ '1234567890', '11:33:66', "{'abx': 33}" ] )
 
