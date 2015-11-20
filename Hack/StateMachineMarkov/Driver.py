@@ -176,38 +176,44 @@ class Retired(State):
 class Driver(StateMachine):
 
   def __init__(self):
-    # Initial state
+    # Initial state is kid
     StateMachine.__init__(self, Driver.kid)
 
 
-# 
-# 3. Possible states of the Driver, are defined as 
-#    Static members of the MouseDriver class initializated 
-#    with the states defined at 1 above.
-#
-
-mob = 199901
-Driver.kid         = Kid(mob)
-Driver.student     = Student(mob)
-Driver.employed    = Employed(mob)
-Driver.unemployed  = Unemployed(mob)
-Driver.retired     = Retired(mob)
-
-
-#res = check_age(201101, 201511, 5)
-#print("# Check age %i" % res)
-#sys.exit()
-
 
 
 #
-# 4. Create a sequence of months
+# 3. Create a sequence of months
 #
 
 # Map months to int 
 months = map(string.strip, open("./actions/actions_seq.txt").readlines())
 mm = [ mo for mo in months if mo != '']
 months = map(int, mm)
+
+
+
+# 
+# 4. Possible states of the Driver, are defined as 
+#    Static members of the MouseDriver class initializated 
+#    with the states defined at 1 above.
+#
+
+mob  = 199901
+date = months[0]
+
+Driver.kid         = Kid(mob, date)
+Driver.student     = Student(mob, date)
+Driver.employed    = Employed(mob, date)
+Driver.unemployed  = Unemployed(mob, date)
+Driver.retired     = Retired(mob, date)
+
+
+
+#res = check_age(201101, 201511, 5)
+#print("# Check age %i" % res)
+#sys.exit()
+
 
 
 
