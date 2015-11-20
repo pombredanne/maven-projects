@@ -22,10 +22,11 @@ class StateMachine:
     # Invoke State.run()
     self.currentState.run()
 
-  def runAll(self, input_actions):
-    for act in input_actions:
-      print(act)
-      self.currentState = self.currentState.next(act)
+  def runAll(self, timeline):
+    for date in timeline:
+      print("#---")
+      print("# Time stamp %i" % date)
+      self.currentState = self.currentState.next(date)
       self.currentState.run()
 
 
