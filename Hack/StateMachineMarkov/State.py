@@ -16,9 +16,11 @@ class State:
     self.expense = 0
 
 
-  def __call__(self, date_):
-    print("#   state set date: date=%i" % date_)
-    self.date = date_
+  def __call__(self, info_):
+    print("#   state set date: date=%i" % info_['date'])
+    self.date = info_['date']
+    self.income = info_['income']
+    self.expense = info_['expense']
     return self
 
 

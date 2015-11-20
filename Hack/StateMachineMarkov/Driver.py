@@ -19,7 +19,8 @@ turn65 = 18
 # Check if the age of a person 
 # has reached the age threshold
 #
-def check_age (dob, date, age):
+def check_age (dob, info, age):
+  date = info['date'] 
 
   m1 = 12 * (date / 100) + date % 100
   m0 = 12 * (dob / 100)  + dob % 100

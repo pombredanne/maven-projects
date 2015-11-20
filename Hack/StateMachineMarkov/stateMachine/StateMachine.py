@@ -25,8 +25,8 @@ class StateMachine:
   def runAll(self, timeline):
     for date in timeline:
       print("#---")
-      print("# Time stamp %i" % date)
-      self.currentState = self.currentState.next(date)
+      print("# Time stamp %i, Income %i, Expense %i" % (date, self.currentState.income, self.currentState.expense))
+      self.currentState = self.currentState.next({'date':date, 'income':0, 'expense':0})
       self.currentState.run()
 
 
