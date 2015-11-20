@@ -26,6 +26,7 @@ years = range(start, start+numYears)
 months = range(1, 12+1)
 
 f = open('product_table.csv', 'w')
+f.write ("type_id, subtype_id, start_time, end_time, duration, interest_rate \n")
 for y in years:
   for m in months:
     b = next(bonds)
@@ -34,14 +35,14 @@ for y in years:
     i = next(interest)
     for type in ['savings', 'fixed', 'investment']:
       #[type, subtype, decr, duration, extra_base_points]
-      for sub in [(1, 0, 'flex', 1, 0)]:
+      for sub in [(1, 10, 'flex', 1, 0)]:
         # typeID, subtypeID, start_time, end_time+1, duration, interest
-	print("%i, %i, %i-%i-01, 0000-00-00, %i, %.3f" % (sub[0], sub[1], y, m, sub[3],i+sub[4]))
-        f.write("%i, %i, %i-%i-01, 0000-00-00, %i, %.3f\n" % (sub[0], sub[1], y, m, sub[3],i+sub[4]))
+	print("%i, %i, %i-%i-01 00:00:00, , %i, %.3f" % (sub[0], sub[1], y, m, sub[3],i+sub[4]))
+        f.write("%i, %i, %i-%i-01 00:00:00, , %i, %.3f\n" % (sub[0], sub[1], y, m, sub[3],i+sub[4]))
 
       for sub in [(2, 6, '3y', 3*12,0.23), (2, 5, '2y',2*12,0.11), (2, 4,'1y',12,0.05), (2, 3, '9m',9,0.003), (2, 2, '6m',6,0.002), (2, 1, '3m',3,0.001)]:
-        print("%i, %i, %i-%i-01, 0000-00-00, %i, %.3f" % (sub[0], sub[1], y, m, sub[3],i+sub[4]))
-        f.write("%i, %i, %i-%i-01, 0000-00-00, %i, %.3f\n" % (sub[0], sub[1], y, m, sub[3],i+sub[4]))
+        print("%i, %i, %i-%i-01 00:00:00, , %i, %.3f" % (sub[0], sub[1], y, m, sub[3],i+sub[4]))
+        f.write("%i, %i, %i-%i-01 00:00:00, , %i, %.3f\n" % (sub[0], sub[1], y, m, sub[3],i+sub[4]))
 
       for sub in [(3, 9, 'high', 1,0), (3, 8, 'middle', 1,0), (3, 7, 'low', 1,0)]:
         if sub[1] == 7:
@@ -50,5 +51,5 @@ for y in years:
           bs = (s+b)/2.0
         else:
           bs = s
-	print("%i, %i, %i-%i-01, 0000-00-00, %i, %.3f" % (sub[0], sub[1], y, m, sub[3],bs))
-        f.write("%i, %i, %i-%i-01, 0000-00-00, %i, %.3f\n" % (sub[0], sub[1], y, m, sub[3],bs))
+	print("%i, %i, %i-%i-01 00:00:00, , %i, %.3f" % (sub[0], sub[1], y, m, sub[3],bs))
+        f.write("%i, %i, %i-%i-01 00:00:00, , %i, %.3f\n" % (sub[0], sub[1], y, m, sub[3],bs))
