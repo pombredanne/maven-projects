@@ -1,7 +1,7 @@
 import random
 import string, sys
 
-sys.path += ['./stateMachine', './timeline']
+sys.path += ['./stateMachine', './actions']
 
 from State        import State
 from StateMachine import StateMachine
@@ -35,6 +35,22 @@ def check_age (dob, info, age):
     return 1
   else:
     return 0
+
+def isAlive(dob, info):
+  date = info['date'] 
+
+  m1 = 12 * (date / 100) + date % 100
+  m0 = 12 * (dob / 100)  + dob % 100
+
+  months = m1 - m0
+  #print("# months = %i" % months)
+
+  years = months/12
+  #print("# years = %i" % years)
+
+  if years > 110 :
+	print ("# I just died.")
+	return False
 
 
 
@@ -77,10 +93,6 @@ def gen_timeline (start_date, num_months):
 #    with a subclass for each possible state
 #
 
-
-#
-# 1.1 Kid state
-#
 class Kid(State):
 
 
@@ -128,9 +140,6 @@ class Kid(State):
 
 
 
-#
-# 1.2 Student state
-#
 class Student(State):
 
   p_drop = 0.2
@@ -176,9 +185,6 @@ class Student(State):
 
 
 
-#
-# 1.3 Kid state
-#
 class Employed(State):
 
 
@@ -226,9 +232,6 @@ class Employed(State):
 
 
 
-#
-# 1.4 Unemployed state
-#
 class Unemployed(State):
 
   def run(self):
@@ -253,9 +256,6 @@ class Unemployed(State):
 
 
 
-#
-# 1.5 Retured state
-#
 class Retired(State):
 
   def run(self):
@@ -269,20 +269,21 @@ class Retired(State):
   # Find next state or change attrs of current state
   #
 
-  def next(self, date):
+  def next(self, info):
 
     print("# Retired next state: dob = %i" % self.dob)
 
     # no state change
     print("#   no state change")
-    return Driver.retired(date)
-
+    info.alive = isAlive(self.dob, date)
+   
+    return Driver.retired(info)
 
 
 
 
 #
-# 2. The Driver class is a subclass of StateMachine
+# 2. Then Driver class is a subclass of StateMachine
 #
 class Driver(StateMachine):
 
@@ -307,8 +308,8 @@ months = map(int, mm)
 
 # 
 # 4. Possible states of the Driver, are defined as 
-#    Static members of the Driver class initializated 
-#    with the states defined at point 1 above.
+#    Static members of the MouseDriver class initializated 
+#    with the states defined at 1 above.
 #
 
 # month of birth

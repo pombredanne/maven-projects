@@ -12,6 +12,7 @@
 #   o invokes run() on the new state.
 #
 
+
 class StateMachine:
 
   def __init__(self, initialState):
@@ -23,11 +24,12 @@ class StateMachine:
     self.currentState.run()
 
   def runAll(self, timeline):
-    for date in timeline:
-      print("#---")
-      print("# Time stamp %i, Income %i, Expense %i" % (date, self.currentState.income, self.currentState.expense))
-      self.currentState = self.currentState.next({'date':date, 'income':0, 'expense':0})
-      self.currentState.run()
+    if self.currentState.alive:
+      for date in timeline:
+        print("#---")
+        print("# Time stamp %i, Income %i, Expense %i" % (date, self.currentState.income, self.currentState.expense))
+        self.currentState = self.currentState.next({'date':date, 'income':self.currentState.income, 'expense':self.currentState.expense, 'alive':self.currentState.alive})
+        self.currentState.run()
 
 
 
