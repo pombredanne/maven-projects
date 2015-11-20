@@ -6,7 +6,9 @@ sys.path += ['./stateMachine', './actions']
 from State        import State
 from StateMachine import StateMachine
 
-
+#
+# Time based thresholds
+#
 turn18 = 2
 turn25 = 3
 turn65 = 18
@@ -39,18 +41,26 @@ def check_age (dob, date, age):
 
 
 #
-# 1. The possible states of the driver are 
-#    subclasses os State, with a subclass 
-#    for each possible state
+# 1. The states of the driver are subclasses of State, 
+#    with a subclass for each possible state
 #
 
 class Kid(State):
 
+
+  #
+  # Stuff done in this state
+  #
   def run(self):
+    # Make a transaction
     #print("# Run kid:")
     pass
 
 
+
+  #
+  # Finds next state or change attrs of current state
+  #
   def next(self, date):
 
     print("# Kid next state: dob = %i" % self.dob)
@@ -87,18 +97,23 @@ class Student(State):
   p_drop = 0.2
 
   def run(self):
+    # Make a transaction
     #print("# Run Student")
     pass
 
 
+
+  #
+  # Finds next state or change attrs of current state
+  #
   def next(self, date):
 
     print("# Student next state: dob = %i" % self.dob)
 
+
     #
     # Check for time-events
-    #
-    
+    #    
     res = check_age(self.dob, date, turn25)
     if res:
       print("#   graduate to employed or unemployed")
@@ -115,6 +130,7 @@ class Student(State):
     if dice < self.p_drop:
       return Driver.unemployed(date)
 
+
     # no state change
     print("#   no state change")
     return Driver.student(date)
@@ -124,62 +140,70 @@ class Student(State):
 class Employed(State):
 
 
-    p_fired = 0.3
+  p_fired = 0.3
 
 
-    def run(self):
-      #print("# Run employed: ")
-      pass
+  def run(self):
+    #print("# Run employed: ")
+    pass
 
 
-    def next(self, date):
 
-      print("# Employed next state: dob = %i" % self.dob)
+  #
+  # Find next state or change attrs of current state
+  #
+  def next(self, date):
 
-      #
-      # Check for time-events
-      # 
-      res = check_age(self.dob, date, turn65)
-      if res:
-        print("#   graduate to retired")
-        return Driver.retired(date)
+    print("# Employed next state: dob = %i" % self.dob)
 
-
-      #
-      # Check for prob events
-      #
-
-      # fired
-      dice = random.uniform(0,1)
-      if dice < self.p_fired:
-        return Driver.unemployed(date)
+    #
+    # Check for time-events
+    # 
+    res = check_age(self.dob, date, turn65)
+    if res:
+      print("#   graduate to retired")
+      return Driver.retired(date)
 
 
-      #if action == Action.fired:
-      #    return Driver.unemployed
+    #
+    # Check for prob events
+    #
 
-      # no state change
-      print("#   no state change")
-      return Driver.employed(date)
+    # fired
+    dice = random.uniform(0,1)
+    if dice < self.p_fired:
+      return Driver.unemployed(date)
+
+
+    #if action == Action.fired:
+    #    return Driver.unemployed
+
+    # no state change
+    print("#   no state change")
+    return Driver.employed(date)
 
 
 
 class Unemployed(State):
 
-    def run(self):
-      #print("# Run unemployed: ")
-      pass
+  def run(self):
+    #print("# Run unemployed: ")
+    pass
  
 
-    def next(self, date):
 
-      print("# Unemployed next statexs: dob = %i" % self.dob)
-      #if input == Action.hired:
-      #    return Driver.employed(self.dob, date)
+  #
+  # Find next state or change attrs of current state
+  #
+  def next(self, date):
 
-      # no state change
-      print("#   no state change")
-      return Driver.unemployed(date)
+    print("# Unemployed next statexs: dob = %i" % self.dob)
+    #if input == Action.hired:
+    #    return Driver.employed(self.dob, date)
+
+    # no state change
+    print("#   no state change")
+    return Driver.unemployed(date)
 
 
 
@@ -190,6 +214,12 @@ class Retired(State):
     #print("# Run retired: ")
     pass
 
+
+
+
+  #
+  # Find next state or change attrs of current state
+  #
 
   def next(self, date):
 
@@ -203,7 +233,7 @@ class Retired(State):
 
 
 #
-# 2. Subclass of StateMachine
+# 2. Then Driver class is a subclass of StateMachine
 #
 class Driver(StateMachine):
 
@@ -214,8 +244,9 @@ class Driver(StateMachine):
 
 
 
+
 #
-# 3. Create a sequence of months
+# 3. Create a sequence of months to pass to the Driver
 #
 
 # Map months to int 
@@ -231,7 +262,10 @@ months = map(int, mm)
 #    with the states defined at 1 above.
 #
 
+# month of birth
 mob  = 199901
+
+# start date of simulation
 date = months[0]
 
 Driver.kid         = Kid(mob, date)
@@ -249,9 +283,9 @@ Driver.retired     = Retired(mob, date)
 
 
 
+
 #
-#  5. Run all the actions by passing the 
-#     Action objects to the runAll() method
+#  5. Run the state machine through the timelines 
 #
 
 Driver().runAll( months )
