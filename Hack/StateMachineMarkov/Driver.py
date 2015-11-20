@@ -58,10 +58,23 @@ class Kid(State):
     #
     # Check for time-events
     #
+
+    res = check_age(self.dob, date, turn65)
+    if res:
+      print("#   graduate to retired")
+      return Driver.retired(date)
+
+    res = check_age(self.dob, date, turn25)
+    if res:
+      print("#   graduate to employed or unemployed")
+      return Driver.employed(date) 
+
     res = check_age(self.dob, date, turn18)
     if res:
       print("#   graduate to student")
       return Driver.student(date) 
+
+
 
     # no state change
     print("#   no state change")
@@ -82,17 +95,22 @@ class Student(State):
 
     print("# Student next state: dob = %i" % self.dob)
 
+    #
+    # Check for time-events
+    #
+    
     res = check_age(self.dob, date, turn25)
     if res:
       print("#   graduate to employed or unemployed")
       return Driver.employed(date) 
 
 
-    # Check for time-events
-    #if input == Action.turn25:
-    #  return Driver.employed
 
-    # if input == Action.drops:
+    #
+    # Check for prob events
+    #
+
+    # drops out
     dice = random.uniform(0,1)
     if dice < self.p_drop:
       return Driver.unemployed(date)
@@ -104,6 +122,10 @@ class Student(State):
 
 
 class Employed(State):
+
+
+    p_fired = 0.3
+
 
     def run(self):
       #print("# Run employed: ")
@@ -121,6 +143,17 @@ class Employed(State):
       if res:
         print("#   graduate to retired")
         return Driver.retired(date)
+
+
+      #
+      # Check for prob events
+      #
+
+      # fired
+      dice = random.uniform(0,1)
+      if dice < self.p_fired:
+        return Driver.unemployed(date)
+
 
       #if action == Action.fired:
       #    return Driver.unemployed
