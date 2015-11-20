@@ -1,7 +1,7 @@
 import random
 import string, sys
 
-sys.path += ['./stateMachine', './actions']
+sys.path += ['./stateMachine', './timeline']
 
 from State        import State
 from StateMachine import StateMachine
