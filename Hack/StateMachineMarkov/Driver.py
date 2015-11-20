@@ -187,7 +187,7 @@ class Driver(StateMachine):
 #
 
 # Map months to int 
-months = map(string.strip, open("./actions/actions_seq.txt").readlines())
+months = map(string.strip, open("./timeline/months.txt").readlines())
 mm = [ mo for mo in months if mo != '']
 months = map(int, mm)
 
