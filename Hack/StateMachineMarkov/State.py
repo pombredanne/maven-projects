@@ -17,7 +17,7 @@ class State:
 
 
   def __call__(self, date_):
-    print("# Call Kid: date=%i" % date_)
+    print("#   state set date: date=%i" % date_)
     self.date = date_
     return self
 
