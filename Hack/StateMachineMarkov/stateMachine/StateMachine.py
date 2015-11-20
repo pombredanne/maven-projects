@@ -12,6 +12,36 @@
 #   o invokes run() on the new state.
 #
 
+def gen_timeline (start_date, num_months):
+
+
+  time_line = [ start_date ]
+
+  start_year  = start_date / 100
+  start_month = start_date % 100
+
+  #print("# Start %i:%i" % (start_year, start_month) )
+
+  year = start_year
+  for i in range(1, num_months):
+
+    month = start_month + i
+    #print("# Process month %i " % (month ))
+
+    if ( month == 13 ):
+      month = 1
+      year += 1
+
+    res = 100*year + month
+
+    #print("#   result = %i " % res)
+
+    time_line.append(res)
+
+  return time_line
+  #return map(str, time_line)
+
+
 
 class StateMachine:
 
@@ -24,6 +54,7 @@ class StateMachine:
     self.currentState.run()
 
   def runAll(self, timeline):
+    timeline = gen_timeline(200001, 1*12)
     if self.currentState.alive:
       for date in timeline:
         print("#---")

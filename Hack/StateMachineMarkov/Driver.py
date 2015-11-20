@@ -52,42 +52,6 @@ def isAlive(dob, info):
 	print ("# I just died.")
 	return False
 
-
-
-
-def gen_timeline (start_date, num_months):
-
-
-  time_line = [ start_date ]
-
-  start_year  = start_date / 100
-  start_month = start_date % 100
-
-  #print("# Start %i:%i" % (start_year, start_month) )
-
-  year = start_year
-  for i in range(1, num_months):
-
-    month = start_month + i
-    #print("# Process month %i " % (month ))
-
-    if ( month == 13 ):
-      month = 1
-      year += 1
-
-    res = 100*year + month
-
-    #print("#   result = %i " % res)
-
-    time_line.append(res)
-
-  #return time_line
-  return map(str, time_line)
-
-
-
-
-
 #
 # 1. The states of the driver are subclasses of State, 
 #    with a subclass for each possible state
@@ -95,7 +59,7 @@ def gen_timeline (start_date, num_months):
 
 class Kid(State):
 
-
+  p_sideJob = 0.02
   #
   # Stuff done in this state
   #
@@ -104,12 +68,15 @@ class Kid(State):
     #print("# Run kid:")
     pass
 
+    
+
 
 
   #
   # Finds next state or change attrs of current state
   #
-  def next(self, date):
+  def next(self, info):
+    
 
     print("# Kid next state: dob = %i" % self.dob)
 
@@ -117,26 +84,34 @@ class Kid(State):
     # Check for time-events
     #
 
-    res = check_age(self.dob, date, turn65)
+    res = check_age(self.dob, info, turn65)
     if res:
       print("#   graduate to retired")
-      return Driver.retired(date)
+      return Driver.retired(info)
 
-    res = check_age(self.dob, date, turn25)
+    res = check_age(self.dob, info, turn25)
     if res:
       print("#   graduate to employed or unemployed")
-      return Driver.employed(date) 
+      return Driver.employed(info) 
 
-    res = check_age(self.dob, date, turn18)
+    res = check_age(self.dob, info, turn18)
     if res:
       print("#   graduate to student")
-      return Driver.student(date) 
+      return Driver.student(info) 
 
-
-
+   
+    if info['income'] == 0:
+      dice = random.uniform(0,1)
+      if dice < self.p_sideJob:
+        #print("#I have a job now")
+        #print(info)
+        info['income'] = 400
+        info['expense'] = 300
+        
+	
     # no state change
     print("#   no state change")
-    return Driver.kid(date)
+    return Driver.kid(info)
 
 
 
@@ -154,7 +129,7 @@ class Student(State):
   #
   # Finds next state or change attrs of current state
   #
-  def next(self, date):
+  def next(self, info):
 
     print("# Student next state: dob = %i" % self.dob)
 
@@ -162,10 +137,10 @@ class Student(State):
     #
     # Check for time-events
     #    
-    res = check_age(self.dob, date, turn25)
+    res = check_age(self.dob, info, turn25)
     if res:
       print("#   graduate to employed or unemployed")
-      return Driver.employed(date) 
+      return Driver.employed(info) 
 
 
 
@@ -176,12 +151,12 @@ class Student(State):
     # drops out
     dice = random.uniform(0,1)
     if dice < self.p_drop:
-      return Driver.unemployed(date)
+      return Driver.unemployed(info)
 
 
     # no state change
     print("#   no state change")
-    return Driver.student(date)
+    return Driver.student(info)
 
 
 
@@ -200,17 +175,17 @@ class Employed(State):
   #
   # Find next state or change attrs of current state
   #
-  def next(self, date):
+  def next(self, info):
 
     print("# Employed next state: dob = %i" % self.dob)
 
     #
     # Check for time-events
     # 
-    res = check_age(self.dob, date, turn65)
+    res = check_age(self.dob, info, turn65)
     if res:
       print("#   graduate to retired")
-      return Driver.retired(date)
+      return Driver.retired(info)
 
 
     #
@@ -220,7 +195,7 @@ class Employed(State):
     # fired
     dice = random.uniform(0,1)
     if dice < self.p_fired:
-      return Driver.unemployed(date)
+      return Driver.unemployed(info)
 
 
     #if action == Action.fired:
@@ -228,7 +203,7 @@ class Employed(State):
 
     # no state change
     print("#   no state change")
-    return Driver.employed(date)
+    return Driver.employed(info)
 
 
 
@@ -243,15 +218,15 @@ class Unemployed(State):
   #
   # Find next state or change attrs of current state
   #
-  def next(self, date):
+  def next(self, info):
 
     print("# Unemployed next statexs: dob = %i" % self.dob)
     #if input == Action.hired:
-    #    return Driver.employed(self.dob, date)
+    #    return Driver.employed(self.dob, info)
 
     # no state change
     print("#   no state change")
-    return Driver.unemployed(date)
+    return Driver.unemployed(info)
 
 
 
@@ -275,7 +250,7 @@ class Retired(State):
 
     # no state change
     print("#   no state change")
-    info.alive = isAlive(self.dob, date)
+    info.alive = isAlive(self.dob, info)
    
     return Driver.retired(info)
 
