@@ -94,15 +94,15 @@ def select( con, table ):
 
 
 #
-# Function to get the transactions IDs
+# Function to map types to IDs
 #
-def get_trans_ids( con, table ):
+def map_type_2_id( con, table ):
 
   type_2_id = {}
 
   print ""
   print "#" * 44
-  print "# Getting transaction IDs "
+  print "# Mapping types to IDs "
   print "#" * 44
   
 
@@ -112,14 +112,14 @@ def get_trans_ids( con, table ):
   #
   con.query("SELECT * from " + table)
   res = con.store_result()
-  print "# 2. res has type = %s" % repr(type(res))
+  #print "# 2. res has type = %s" % repr(type(res))
 
 
   #
   # 2. Fetch rows from result
   #
   rows = res.fetch_row(maxrows=0, how=1)
-  print "# 3. rows has type = ", repr(type(rows))
+  #print "# 3. rows has type = ", repr(type(rows))
 
   i = 1
   for row in rows:
@@ -141,7 +141,7 @@ def get_trans_ids( con, table ):
   return type_2_id
 
 
-# end of get_trans_ids( con, table )
+# end of map_type_2_id( con, table )
 
 
 
@@ -283,12 +283,15 @@ def get_db_list( con ):
 # 
 #print "name = %s " % __name__
 
+
 if __name__ == "__main__":
+
 
   #
   # 1. Get connection
   #
   con = get_connection( "172.16.0.82", "one_ng")
+
 
 
   #
@@ -299,25 +302,39 @@ if __name__ == "__main__":
 
 
   #
-  # 3. Get data from DB table
-  # 
-  type_2_id = get_trans_ids( con, "transaction_type")
+  # 3. Get maps
+  #
+
+  # 3.1 transaction_type[type] = id 
+  type_2_id = map_type_2_id( con, "transaction_type")
   for k, v in type_2_id.iteritems():
     print  ("##  type_id[%s] =  %s" % (k, v) )
 
 
+  # 3.2 goal_type[type] = id 
+  goal_2_id = map_type_2_id( con, "goal_type")
+  for k, v in goal_2_id.iteritems():
+    print  ("##  goal_id[%s] =  %s" % (k, v) )
+
+
+
+
+  #
+  # 4. Get data from DB table
+  # 
   #select( con, "transaction_type")
 
 
 
   #
-  # 4. Insert into DB table
+  # 5. Insert into DB table
   # 
-  #insert( con, "con_data", [ '1234567890', '11:33:66', "{'abx': 33}" ] )
+  #insert( con, "transactions", [ '1234567890', '11:33:66', "{'abx': 33}" ] )
 
   
+
   #
-  # 4. Close connection
+  # 6. Close connection
   #
   con.close()
 
