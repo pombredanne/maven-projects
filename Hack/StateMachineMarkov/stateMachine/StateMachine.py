@@ -54,7 +54,7 @@ class StateMachine:
     self.currentState.run()
 
   def runAll(self, timeline):
-    timeline = gen_timeline(200001, 1*12)
+    timeline = gen_timeline(200001, 20*12)
     if self.currentState.alive:
       for date in timeline:
         print("#---")

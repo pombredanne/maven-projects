@@ -4,16 +4,16 @@
 #
 
 class State:
-
-  def __init__(self, dob_ = 197010, date_ = 0):
+  def __init__(self, dob_ = 197010, info_ = {'date':0, 'income':0, 'expense':0}):
+    date_ = info_['date']
     print("# Make person: dob=%i  date=%i" %  (dob_, date_))
     self.dob = dob_
     if date_ == 0:
       self.date = self.dob
     else:
       self.date = date_
-    self.income = 0
-    self.expense = 0
+    self.income = info_['income']
+    self.expense = info_['expense']
     self.alive = True
 
 

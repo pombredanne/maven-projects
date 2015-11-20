@@ -52,6 +52,40 @@ def isAlive(dob, info):
 	print ("# I just died.")
 	return False
 
+
+class Start(State):
+
+  def run(self):
+    # Make a transaction
+    #print("# Run kid:")
+    pass
+
+    print("# Start next state: dob = %i" % self.dob)
+
+    #
+    # Check for time-events
+    #
+
+  def next(self, info):
+    res = check_age(self.dob, info, turn65)
+    if res:      
+      print("#   graduate to retired")
+      return Driver.retired(info)
+
+    res = check_age(self.dob, info, turn25)
+    if res:
+      print("#   graduate to employed or unemployed")
+      return Driver.employed(info) 
+
+    res = check_age(self.dob, info, turn18)
+    if res:
+      print("#   graduate to student")
+      return Driver.student(info) 
+
+    print("#   graduate to kid")
+    return Kid(mob, info)
+
+
 #
 # 1. The states of the driver are subclasses of State, 
 #    with a subclass for each possible state
@@ -67,7 +101,8 @@ class Kid(State):
     # Make a transaction
     #print("# Run kid:")
     pass
-
+  
+  
     
 
 
@@ -77,27 +112,11 @@ class Kid(State):
   #
   def next(self, info):
     
-
-    print("# Kid next state: dob = %i" % self.dob)
-
-    #
-    # Check for time-events
-    #
-
-    res = check_age(self.dob, info, turn65)
-    if res:
-      print("#   graduate to retired")
-      return Driver.retired(info)
-
-    res = check_age(self.dob, info, turn25)
-    if res:
-      print("#   graduate to employed or unemployed")
-      return Driver.employed(info) 
-
     res = check_age(self.dob, info, turn18)
     if res:
       print("#   graduate to student")
-      return Driver.student(info) 
+      return Student(info) 
+
 
    
     if info['income'] == 0:
@@ -111,7 +130,7 @@ class Kid(State):
 	
     # no state change
     print("#   no state change")
-    return Driver.kid(info)
+    return self(info)
 
 
 
@@ -264,7 +283,7 @@ class Driver(StateMachine):
 
   def __init__(self):
     # Initial state is kid
-    StateMachine.__init__(self, Driver.kid)
+    StateMachine.__init__(self, Driver.start)
 
 
 
@@ -293,11 +312,12 @@ mob  = 199901
 # start date of simulation
 date = months[0]
 
-Driver.kid         = Kid(mob, date)
-Driver.student     = Student(mob, date)
-Driver.employed    = Employed(mob, date)
-Driver.unemployed  = Unemployed(mob, date)
-Driver.retired     = Retired(mob, date)
+Driver.start       = Start(mob, {'date':date, 'income':0, 'expense':0})
+#Driver.kid         = Kid(mob, date)
+#Driver.student     = Student(mob, date)
+#Driver.employed    = Employed(mob, date)
+#Driver.unemployed  = Unemployed(mob, date)
+#Driver.retired     = Retired(mob, date)
 
 
 
