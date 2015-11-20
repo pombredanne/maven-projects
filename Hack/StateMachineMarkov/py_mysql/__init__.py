@@ -151,6 +151,65 @@ def map_type_2_id( con, table ):
 
 
 
+#
+# Function to map name to IDs
+#
+def map_name_2_id( con, table ):
+
+  name_2_id = {}
+
+  print ""
+  print "#" * 44
+  print "# Mapping names to IDs "
+  print "#" * 44
+  
+
+  #
+  # 1. Send query to the table passed as arg 
+  #    and get the query result object
+  #
+  con.query("SELECT name,id from " + table)
+  res = con.store_result()
+  #print "# 2. res has type = %s" % repr(type(res))
+
+
+  #
+  # 2. Fetch rows from result
+  #
+  rows = res.fetch_row(maxrows=0, how=1)
+  #print "# 3. rows has type = ", repr(type(rows))
+
+  i = 1
+  for row in rows:
+    dic = {}
+    ls = []
+    print "# 3.%d row[%d] = %s" % (i, i, row)
+    for k, v in row.iteritems():
+      #print  (" %s =>  %s" % (k, v) )
+      dic[k] = v    
+    for v in dic.values():
+      ls.append(v)    
+    name_2_id[ls[0]] = int(ls[1])
+
+    i = i + 1
+
+
+  #print ("## name_2_id map: "), 
+  #print (name_2_id )
+
+  return name_2_id
+
+
+# end of map_name_2_id( con, table )
+
+
+
+
+
+
+
+
+
 
 
 #
@@ -315,6 +374,13 @@ if __name__ == "__main__":
   goal_2_id = map_type_2_id( con, "goal_type")
   for k, v in goal_2_id.iteritems():
     print  ("##  goal_id[%s] =  %s" % (k, v) )
+
+
+  # 3.3 cust_id[name] = id 
+  name_2_id = map_name_2_id( con, "customers")
+  for k, v in name_2_id.iteritems():
+    print  ("##  cust_id[%s] =  %s" % (k, v) )
+
 
 
 
