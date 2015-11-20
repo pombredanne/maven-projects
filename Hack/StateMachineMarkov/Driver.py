@@ -2,7 +2,7 @@ import random
 import string, sys
 import numpy as np
 
-sys.path += ['./stateMachine', './actions']
+sys.path += ['./stateMachine', './']
 
 from State        import State
 from StateMachine import StateMachine
