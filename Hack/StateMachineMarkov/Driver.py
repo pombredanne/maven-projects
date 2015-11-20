@@ -8,6 +8,35 @@ from StateMachine import StateMachine
 from Action       import Action
 
 
+turn18 = 2
+turn65 = 4
+
+
+
+#
+# Check if the age of a person 
+# has reached the age threshold
+#
+def check_age (dob, date, age):
+
+  m1 = 12 * (date / 100) + date % 100
+  m0 = 12 * (dob / 100)  + dob % 100
+
+  months = m1 - m0
+  #print("# months = %i" % months)
+
+  years = months/12
+  #print("# years = %i" % years)
+
+  if ( years - age ) >= 0:
+    return 1
+  else:
+    return 0
+
+
+
+
+
 
 #
 # 1. The possible states of the driver are 
@@ -18,17 +47,22 @@ from Action       import Action
 class Kid(State):
 
   def run(self):
-    print("# Kid: growing up")
+    print("# Run kid:")
 
 
-  def next(self, input):
+  def next(self, date):
 
-    print("# Kid: born on %i" % self.dob)
+    print("# Kid next state: dob = %i" % self.dob)
 
-    if input == Action.turn18:
-      return Driver.student
+    #
+    # Check for time-events
+    #
+    res = check_age(self.dob, date, turn18)
+    if res:
+       return Student(self.dob, date) 
+
     # no state change
-    return Driver.kid
+    return Driver.kid(date)
 
 
 
@@ -37,61 +71,85 @@ class Student(State):
   p_drop = 0.2
 
   def run(self):
-    print("# Student: learning")
+    print("# Run Student")
 
-  def next(self, input):
+
+  def next(self, date):
+
+
+    print("# Student next state: dob = %i" % self.dob)
 
     # Check for time-events
-    if input == Action.turn25:
-      return Driver.employed
+    #if input == Action.turn25:
+    #  return Driver.employed
 
     # if input == Action.drops:
     dice = random.uniform(0,1)
     if dice < self.p_drop:
-      return Driver.unemployed
+      return Driver.unemployed(date)
 
     # no state change
-    return Driver.student
+    return Driver.student(date)
 
 
 
 class Employed(State):
 
     def run(self):
-        print("# Employed: Making money")
+        print("# Run employed: ")
 
-    def next(self, action):
-        if action == Action.turn65:
-            return Driver.retired
-        if action == Action.fired:
-            return Driver.unemployed
-        # no state change
-        return Driver.employed
+
+    def next(self, date):
+
+      print("# Employed next state: dob = %i" % self.dob)
+
+      #
+      # Check for time-events
+      # 
+      res = check_age(self.dob, date, turn65)
+      if res:
+        return Driver.retired(date)
+
+
+      #if action == Action.fired:
+      #    return Driver.unemployed
+
+      # no state change
+      return Driver.employed(date)
+
 
 
 class Unemployed(State):
 
     def run(self):
-        print("# Unemployed: broke")
+        print("# Run unemployed: ")
 
-    def next(self, input):
-        if input == Action.hired:
-            return Driver.employed
+    def next(self, date):
 
-        # no state change
-        return Driver.unemployed
+      print("# Next for unemployed: dob = %i" % self.dob)
+      #if input == Action.hired:
+      #    return Driver.employed(self.dob, date)
+
+      # no state change
+      return Driver.unemployed(date)
+
 
 
 
 class Retired(State):
 
     def run(self):
-        print("# Retired: happy")
 
-    def next(self, input):
+      print("# Run retired: ")
 
-        # no state change
-        return Driver.unemployed
+
+
+    def next(self, date):
+
+      print("# Next for unemployed: dob = %i" % self.dob)
+
+      # no state change
+      return Driver.retired(date)
 
 
 
@@ -99,6 +157,7 @@ class Retired(State):
 # 2. Subclass of StateMachine
 #
 class Driver(StateMachine):
+
   def __init__(self):
     # Initial state
     StateMachine.__init__(self, Driver.kid)
@@ -109,22 +168,36 @@ class Driver(StateMachine):
 #    Static members of the MouseDriver class initializated 
 #    with the states defined at 1 above.
 #
-Driver.kid         = Kid(19990101)
-Driver.student     = Student()
-Driver.employed    = Employed()
-Driver.unemployed  = Unemployed()
-Driver.retired     = Retired()
+
+mob = 199901
+Driver.kid         = Kid(mob)
+Driver.student     = Student(mob)
+Driver.employed    = Employed(mob)
+Driver.unemployed  = Unemployed(mob)
+Driver.retired     = Retired(mob)
+
+
+#res = check_age(201101, 201511, 5)
+#print("# Check age %i" % res)
+#sys.exit()
+
 
 
 #
-# 4. Create a sequence of action objects from 
-#    a list of action names 
+# 4. Create a sequence of months
 #
-moves = map(string.strip, open("./actions/actions_seq.txt").readlines())
+
+# Map months to int 
+months = map(string.strip, open("./actions/actions_seq.txt").readlines())
+mm = [ mo for mo in months if mo != '']
+months = map(int, mm)
+
+
 
 #
 #  5. Run all the actions by passing the 
 #     Action objects to the runAll() method
 #
-Driver().runAll( map(Action, moves) )
+
+Driver().runAll( months )
 

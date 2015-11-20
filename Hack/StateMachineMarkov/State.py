@@ -1,12 +1,27 @@
 #
-# An abstract State clas: has the run() operation, and 
-# can be moved into the next State given an input action
+# An abstract State class: has the run() operation, 
+# and can be moved into the next State 
 #
 
 class State:
 
-  def __init__(self, dob_ = 19701010):
+  def __init__(self, dob_ = 197010, date_ = 0):
+    print("# Make person: dob=%i  date=%i" %  (dob_, date_))
     self.dob = dob_
+    if date_ == 0:
+      self.date = self.dob
+    else:
+      self.date = date_
+    self.income = 0
+    self.expense = 0
+
+
+  def __call__(self, date_):
+    print("# Call Kid: date=%i" % date_)
+    self.date = date_
+    return self
+
+
 
   # implemented by subclasses
   def run(self):
