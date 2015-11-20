@@ -1,5 +1,6 @@
 import random
 import string, sys
+import numpy as np
 
 sys.path += ['./stateMachine', './actions']
 
@@ -11,7 +12,9 @@ from StateMachine import StateMachine
 #
 turn18 = 2
 turn25 = 3
-turn65 = 18
+turn65 = 5
+turn110 = 7
+
 
 
 
@@ -36,22 +39,23 @@ def check_age (dob, info, age):
   else:
     return 0
 
-def isAlive(dob, info):
-  date = info['date'] 
 
-  m1 = 12 * (date / 100) + date % 100
-  m0 = 12 * (dob / 100)  + dob % 100
-
-  months = m1 - m0
-  #print("# months = %i" % months)
-
-  years = months/12
-  #print("# years = %i" % years)
-
-  if years > 110 :
-	print ("# I just died.")
-	return False
-
+def randomStateChange(info, probs):
+  # expects list of state transition probabilities:
+  #[p_unemployed,  p_employed, p_student, p_retired]
+  dice = random.uniform(0,1)
+  if dice < sum(probs[0:1]):
+    print("#   graduate to unemployed")
+    return Unemployed(info)
+  elif dice < sum(probs[0:2]):
+    print("#   graduate to employed2")
+    return Employed(info)
+  elif dice < sum(probs[0:3]):
+    print("#   graduate to student")
+    return Student(info)
+  else :
+    print("#   graduate to retired")
+    return Retired(info)
 
 class Start(State):
 
@@ -70,20 +74,20 @@ class Start(State):
     res = check_age(self.dob, info, turn65)
     if res:      
       print("#   graduate to retired")
-      return Driver.retired(info)
+      return Retired(info)
 
     res = check_age(self.dob, info, turn25)
     if res:
       print("#   graduate to employed or unemployed")
-      return Driver.employed(info) 
+      return Employed(info) 
 
-    res = check_age(self.dob, info, turn18)
+    res = check_age(self.dob,info, turn18)
     if res:
       print("#   graduate to student")
-      return Driver.student(info) 
+      return Student(info) 
 
     print("#   graduate to kid")
-    return Kid(mob, info)
+    return Kid(info)
 
 
 #
@@ -94,16 +98,18 @@ class Start(State):
 class Kid(State):
 
   p_sideJob = 0.02
+  p_unemployed = 0.2
+  p_employed = 0.3  
+  p_student = 0.5
+  p_retired = 0
   #
   # Stuff done in this state
   #
+
   def run(self):
     # Make a transaction
     #print("# Run kid:")
     pass
-  
-  
-    
 
 
 
@@ -114,10 +120,7 @@ class Kid(State):
     
     res = check_age(self.dob, info, turn18)
     if res:
-      print("#   graduate to student")
-      return Student(info) 
-
-
+      return randomStateChange(info, [self.p_unemployed, self.p_employed, self.p_student, self.p_retired])
    
     if info['income'] == 0:
       dice = random.uniform(0,1)
@@ -129,14 +132,27 @@ class Kid(State):
         
 	
     # no state change
-    print("#   no state change")
+    print("#   no state change, kid")
     return self(info)
 
 
 
 class Student(State):
 
-  p_drop = 0.2
+  p_drop = 0.2/12
+
+  p_sideJob = 0.4
+
+  p_unemployed = 0.2
+  p_employed = 0.8
+  p_student = 0
+  p_retired = 0
+
+  def __init__(self,  info):
+    info['income'] = 1000
+    info['expense'] = 800
+    print info
+    State.__init__(self, info)
 
   def run(self):
     # Make a transaction
@@ -150,7 +166,7 @@ class Student(State):
   #
   def next(self, info):
 
-    print("# Student next state: dob = %i" % self.dob)
+    #print("# Student next state: dob = %i" % self.dob)
 
 
     #
@@ -158,10 +174,8 @@ class Student(State):
     #    
     res = check_age(self.dob, info, turn25)
     if res:
-      print("#   graduate to employed or unemployed")
-      return Driver.employed(info) 
-
-
+      return randomStateChange(info, [self.p_unemployed, self.p_employed, self.p_student, self.p_retired])
+    
 
     #
     # Check for prob events
@@ -170,19 +184,39 @@ class Student(State):
     # drops out
     dice = random.uniform(0,1)
     if dice < self.p_drop:
-      return Driver.unemployed(info)
+      return Unemployed(info)
+
+    if info['income'] <= 1000 :
+      dice = random.uniform(0,1)
+      if dice < self.p_sideJob:
+        #print("#I have a job now")
+        #print(info)
+        info['income'] = 2000
+        info['expense'] = 1600
 
 
     # no state change
-    print("#   no state change")
-    return Driver.student(info)
+    print("#   no state change, Student")
+    return self(info)
 
 
 
 class Employed(State):
 
 
-  p_fired = 0.3
+  p_unemployed = 0.03
+  p_employed = 0.97
+  p_student = 0
+  p_retired = 0
+
+  income_avg = 3000
+  income_std = 500
+
+  def __init__(self,  info):
+    info['income'] = round(np.random.normal(self.income_avg, self.income_std))
+    info['expense'] = round(self.income_avg-200, self.income_std)
+    print info
+    State.__init__(self, info)
 
 
   def run(self):
@@ -196,15 +230,15 @@ class Employed(State):
   #
   def next(self, info):
 
-    print("# Employed next state: dob = %i" % self.dob)
+    #print("# Employed next state: dob = %i" % self.dob)
 
     #
     # Check for time-events
-    # 
+    #
     res = check_age(self.dob, info, turn65)
     if res:
       print("#   graduate to retired")
-      return Driver.retired(info)
+      return Retired(info)
 
 
     #
@@ -212,21 +246,33 @@ class Employed(State):
     #
 
     # fired
+
     dice = random.uniform(0,1)
-    if dice < self.p_fired:
-      return Driver.unemployed(info)
+    if dice < self.p_unemployed:
+      print("#   graduate to Unemployed")
+      return Unemployed(info)
+    print("#   no state change, Employed")
+    return self(info)
 
 
-    #if action == Action.fired:
-    #    return Driver.unemployed
-
-    # no state change
-    print("#   no state change")
-    return Driver.employed(info)
 
 
 
 class Unemployed(State):
+
+  p_unemployed = 0.9
+  p_employed = 0.07
+  p_student = 0.03
+  p_retired = 0
+
+  income_avg = 3000
+  income_std = 500
+
+  def __init__(self,  info):
+    info['income'] = info['income']*0.5
+    info['expense'] = info['expense']*0.75
+    print info
+    State.__init__(self, info)
 
   def run(self):
     #print("# Run unemployed: ")
@@ -239,13 +285,25 @@ class Unemployed(State):
   #
   def next(self, info):
 
-    print("# Unemployed next statexs: dob = %i" % self.dob)
-    #if input == Action.hired:
-    #    return Driver.employed(self.dob, info)
+    #print("# Unemployed next state: dob = %i" % self.dob)
 
-    # no state change
-    print("#   no state change")
-    return Driver.unemployed(info)
+    #
+    # Check for time-events
+    #
+    res = check_age(self.dob, info, turn65)
+    if res:
+      print("#   graduate to retired")
+      return Retired(info)
+
+    dice = random.uniform(0,1)
+    if dice < self.p_employed:
+      print("#   graduate to employed1")
+      return Employed(info)
+    if dice < self.p_employed + self.p_student:
+      print("#   graduate to student")
+      return Student(info)
+    print("#   no state change, Unemployed")
+    return self(info)
 
 
 
@@ -256,6 +314,11 @@ class Retired(State):
     #print("# Run retired: ")
     pass
 
+  def __init__(self,  info):
+    info['income'] = info['income']*0.7
+    info['expense'] = info['expense']*0.75
+    print info
+    State.__init__(self, info)
 
 
 
@@ -265,13 +328,17 @@ class Retired(State):
 
   def next(self, info):
 
-    print("# Retired next state: dob = %i" % self.dob)
+    #print("# Retired next state: dob = %i" % self.dob)
 
     # no state change
-    print("#   no state change")
-    info.alive = isAlive(self.dob, info)
-   
-    return Driver.retired(info)
+    res = check_age(self.dob, info, turn110)
+    if res:
+      print("#   graduate to dead")
+      info['alive'] = False
+
+    print("#   no state change, Retired")
+    return self(info)
+    
 
 
 
@@ -312,7 +379,7 @@ mob  = 199901
 # start date of simulation
 date = months[0]
 
-Driver.start       = Start(mob, {'date':date, 'income':0, 'expense':0})
+Driver.start       = Start({'dob':mob ,'date':date, 'income':0, 'expense':0})
 #Driver.kid         = Kid(mob, date)
 #Driver.student     = Student(mob, date)
 #Driver.employed    = Employed(mob, date)

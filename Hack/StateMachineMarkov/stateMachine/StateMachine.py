@@ -21,11 +21,11 @@ def gen_timeline (start_date, num_months):
   start_month = start_date % 100
 
   #print("# Start %i:%i" % (start_year, start_month) )
-
+  month = start_month
   year = start_year
   for i in range(1, num_months):
 
-    month = start_month + i
+    month += 1
     #print("# Process month %i " % (month ))
 
     if ( month == 13 ):
@@ -54,13 +54,25 @@ class StateMachine:
     self.currentState.run()
 
   def runAll(self, timeline):
-    timeline = gen_timeline(200001, 20*12)
-    if self.currentState.alive:
-      for date in timeline:
-        print("#---")
-        print("# Time stamp %i, Income %i, Expense %i" % (date, self.currentState.income, self.currentState.expense))
-        self.currentState = self.currentState.next({'date':date, 'income':self.currentState.income, 'expense':self.currentState.expense, 'alive':self.currentState.alive})
-        self.currentState.run()
+    timeline = gen_timeline(200001, 8*12)
+
+    
+    for date in timeline:
+      if not self.currentState.alive:
+        break
+
+      m1 = 12 * (date / 100) + date % 100
+      m0 = 12 * (self.currentState.dob / 100)  + self.currentState.dob % 100
+
+      months = m1 - m0
+      #print("# months = %i" % months)
+
+      years = months/12
+
+      print("#---")
+      print("# Time stamp %i, Income %i, Expense %i, Age %i" % (date, self.currentState.income, self.currentState.expense, years))
+      self.currentState = self.currentState.next({'dob':self.currentState.dob, 'date':date, 'income':self.currentState.income, 'expense':self.currentState.expense, 'alive':self.currentState.alive})
+      self.currentState.run()
 
 
 
