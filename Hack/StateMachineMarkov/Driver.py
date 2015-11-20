@@ -1,7 +1,7 @@
 import random
 import string, sys
 
-sys.path += ['./stateMachine', './actions']
+sys.path += ['./stateMachine', './timeline']
 
 from State        import State
 from StateMachine import StateMachine
@@ -46,6 +46,10 @@ def check_age (dob, info, age):
 #    with a subclass for each possible state
 #
 
+
+#
+# 1.1 Kid state
+#
 class Kid(State):
 
 
@@ -93,6 +97,9 @@ class Kid(State):
 
 
 
+#
+# 1.2 Student state
+#
 class Student(State):
 
   p_drop = 0.2
@@ -138,6 +145,9 @@ class Student(State):
 
 
 
+#
+# 1.3 Kid state
+#
 class Employed(State):
 
 
@@ -185,6 +195,9 @@ class Employed(State):
 
 
 
+#
+# 1.4 Unemployed state
+#
 class Unemployed(State):
 
   def run(self):
@@ -209,6 +222,9 @@ class Unemployed(State):
 
 
 
+#
+# 1.5 Retured state
+#
 class Retired(State):
 
   def run(self):
@@ -233,8 +249,9 @@ class Retired(State):
 
 
 
+
 #
-# 2. Then Driver class is a subclass of StateMachine
+# 2. The Driver class is a subclass of StateMachine
 #
 class Driver(StateMachine):
 
@@ -259,8 +276,8 @@ months = map(int, mm)
 
 # 
 # 4. Possible states of the Driver, are defined as 
-#    Static members of the MouseDriver class initializated 
-#    with the states defined at 1 above.
+#    Static members of the Driver class initializated 
+#    with the states defined at point 1 above.
 #
 
 # month of birth
