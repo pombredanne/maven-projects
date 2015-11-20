@@ -1,7 +1,0 @@
-turn18
-drops
-turn25
-hired
-fired
-hired
-turn65
