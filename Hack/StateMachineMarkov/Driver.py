@@ -5,7 +5,6 @@ sys.path += ['./stateMachine', './actions']
 
 from State        import State
 from StateMachine import StateMachine
-from Action       import Action
 
 
 turn18 = 2
