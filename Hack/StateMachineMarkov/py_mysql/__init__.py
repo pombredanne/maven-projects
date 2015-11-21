@@ -427,7 +427,8 @@ def insert_goal(con, customer_id_, type, amount):
   # 1. execute: 
   #     INSERT INTO con_data VALUES('11:33:66', '{\'abx\': 33 }');
   #
- 
+
+  goal_id = 0
   try: 
 
     # Insert a goal
@@ -437,10 +438,9 @@ def insert_goal(con, customer_id_, type, amount):
     query = "INSERT INTO goals(type_id, customer_id, status_id, amount) VALUES(%s, %s, %s, %s);" 
     cur.execute(query, ( values[0], values[1], values[2],  values[3]) )
 
-
     #print "Auto Increment ID: %s" % cur.lastrowid
-    print "Executed: %s" % cur._last_executed
-    print "Result: %s"   % cur._result
+    #print "Executed: %s" % cur._last_executed
+    #print "Result: %s"   % cur._result
 
 
     # Close cursor
@@ -451,12 +451,38 @@ def insert_goal(con, customer_id_, type, amount):
     con.commit()
 
 
+
+    # 
+    # Select
+    #
+
+    # select max(id) from goals where type_id=4 and customer_id=13 and status_id=4;
+    query = "SELECT max(id) from goals where type_id=" + str(values[0]) + " and customer_id=" + str(values[1]) + " and status_id=" + str(values[2])
+    #print "# select query = ", query 
+
+
+    con.query(query)
+    res = con.store_result()
+
+    rows = res.fetch_row(maxrows=0, how=1)
+
+    i = 1
+    for row in rows:
+      goal_id = row.values()[0]
+      #print "# 13.%d row[%d] = %s" % (i, i, row)
+      i = i + 1
+
+
+
   except MySQLdb.IntegrityError as err:
     print( "##\n## Error: {}".format(err) )
     print("##")   
     pass
 
-  #return goal_id
+
+  print "# insert_goal: goal_id = %i" % (val)
+  return goal_id
+
 
 
 # end insert_goal
