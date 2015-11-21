@@ -5,6 +5,8 @@
 
 import random
 import py_mysql
+import datetime
+import dateutil.relativedelta as relativedelta
 
 class State:
 
@@ -70,8 +72,14 @@ class State:
           print (" Buying type " + typ + " amount " + str(amount) + " horizon " + str(horizon) ) 
 
           # make goal
-          start_date = self.date - horizon - 1
-          end_date = self.date
+          #start_date = self.date - horizon - 1
+          y = self.date / 100
+          m = date % 100
+
+          end = datetime.datetime(y, m, 01)
+          start = end + relativedelta.relativedelta(month = -horizon-1)
+          start_date = int(begin.strftime('%Y%m%'))
+          
           goal_id = py_mysql.insert_goal(self.con, self.customer_id, typ, amount, start_date, end_date)
 
           # make transaction
