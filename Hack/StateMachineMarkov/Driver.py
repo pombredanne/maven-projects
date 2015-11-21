@@ -3,7 +3,7 @@ import string, sys
 import numpy as np
 import py_mysql
 
-sys.path += ['./stateMachine', './']
+#sys.path += ['./stateMachine', './']
 
 from State        import State
 from StateMachine import StateMachine
@@ -357,7 +357,6 @@ class Driver(StateMachine):
 #mm = [ mo for mo in months if mo != '']
 #months = map(int, mm)
 num_months  = 12 * 8
-con = py_mysql.get_connection( "172.16.0.82", "one_ng")
 
 
 # 
@@ -374,22 +373,19 @@ mob  = 199901
 date = 200001
 
 
-Driver.start        = Start( {'dob':mob ,'date':date, 'income':0, 'expense':0, 'con': con} )
-#Driver.kid         = Kid(mob, date)
-#Driver.student     = Student(mob, date)
-#Driver.employed    = Employed(mob, date)
-#Driver.unemployed  = Unemployed(mob, date)
-#Driver.retired     = Retired(mob, date)
+
+#
+# 5. Get connection to DB
+#
+con = py_mysql.get_connection( "172.16.0.82", "one_ng")
 
 
-
-# Example
-#res = check_age(201101, 201511, 5)
-#print("# Check age %i" % res)
-
-# Example
-#res = gen_timeline (201501, 3)
-#print res
+#
+# 6. Create initial state of Driver
+#
+Driver.start      = Start( {'dob':mob ,'date':date, 'income':0, 'expense':0, 'con': con} )
+#Driver.kid       = Kid(mob, date)
+#Driver.student   = Student(mob, date)
 
 
 
@@ -399,6 +395,21 @@ Driver.start        = Start( {'dob':mob ,'date':date, 'income':0, 'expense':0, '
 #  5. Run the state machine through the timelines 
 #
 
-customer_id = 1
-Driver().runAll( date,  num_months, customer_id )
+n_customers = 1;
+for customer_id in range(1, n_customers+1):
+  Driver().runAll( date,  num_months, customer_id )
+
+
+
+#
+# Utilities
+#
+
+# Example
+#res = check_age(201101, 201511, 5)
+#print("# Check age %i" % res)
+
+# Example
+#res = gen_timeline (201501, 3)
+#print res
 

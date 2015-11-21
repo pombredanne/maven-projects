@@ -36,20 +36,21 @@ class State:
 
 
 
-  # implemented by subclasses
   def run(self, customer_id_):
-    #assert 0, "run not implemented"
-    # Make a transaction
-    #print("# Run kid:")
-    print("# Start next state: dob = %i" % self.dob)
-    #
-    #  customer_id
-    #  'income', 'expenses'
-    #  amount
+
+    print("# Start run: dob = %i" % self.dob)
     self.customer_id = customer_id_ 
-    py_mysql.insert_xact(self.con, self.customer_id, 'income',  self.income)
-    py_mysql.insert_xact(self.con, self.customer_id, 'expenses', self.expense)
-    pass
+
+    # Make a transaction    
+    #   customer_id
+    #   type is 'income' or 'expenses'
+    #   amount
+
+    if ( self.income > 0):
+      py_mysql.insert_xact(self.con, self.customer_id, 'income',  self.income)
+
+    if ( self.expense > 0):
+      py_mysql.insert_xact(self.con, self.customer_id, 'expenses', self.expense)
 
 
   # implemented by subclasses

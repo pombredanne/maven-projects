@@ -226,8 +226,14 @@ def insert( con, table, seq ):
   print "# Inserting in table ", table, " the values:"
   print "#" * 44
 
+
+  columns = [ 'type_id',  'customer_id', 'goal_id', 'amount' ]
+
+  i = 0
   for item in seq:
-    print "#  ", item
+    print ("#  ", columns[i]),
+    print ("  = ", item)
+    i += 1
 
 
   # 0. Create cursor
@@ -327,15 +333,27 @@ def get_db_list( con ):
 
 
 
+
 #
 #    insert_xact(customer_id, 'income', self.income)
 #    insert_xact(customer_id, 'expenses', self.expense)
 #
 def insert_xact(con, customer_id_, type, amount):
 
+  #
+  # See the comments in section 5.2 for 
+  # where goal_id comes from
+  #
   goal_id = 4
+
+
+  # Get the mapping from trans type name to  trans type ID 
   type_id = map_type_2_id( con, "transaction_type")
+
+  # The set of values to insert
   values = [ type_id[type], customer_id_,  goal_id,  amount ]
+
+  # Insert
   insert( con, "transactions",  values) 
 
 
@@ -406,7 +424,6 @@ if __name__ == "__main__":
 
 
 
-
   #
   # 4. Get data from DB table
   # 
@@ -427,7 +444,7 @@ if __name__ == "__main__":
   #
 
   #
-  # 1. Created a default goal with id = 4 of type 5 (savings) and status 4 (amber)
+  # 5.1 Created a default goal with id = 4 of type 5 (savings) and status 4 (amber)
   #
   #      type_id     = 5 # savings goal
   #      customer_id = 1
@@ -448,7 +465,7 @@ if __name__ == "__main__":
   #
   #
   #
-  # 2. Use the default goal to insert into transactions tabls
+  # 5.2 Use the default goal to insert into transactions tabls
   #
   #     mysql> insert into transactions(type_id, customer_id, goal_id, amount)  values(1, 13, 4, 12345.0);
   #     Query OK, 1 row affected (0.01 sec)
