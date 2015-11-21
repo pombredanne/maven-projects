@@ -47,14 +47,14 @@ class State:
     #   amount
 
     if ( self.income > 0):
-      py_mysql.insert_xact(self.con, self.customer_id, 'income',  self.income)
+      py_mysql.insert_xact(self.con, self.customer_id, 'income',  self.income, 0)
 
     if ( self.expense > 0):
-      py_mysql.insert_xact(self.con, self.customer_id, 'expenses', self.expense)
+      py_mysql.insert_xact(self.con, self.customer_id, 'expenses', self.expense, 0)
 
 
     #(type, [(values, horizons)], prob)
-    goals[('car',[(2000, 6), (8000, 4*12), (15000, 6*12), (25000, 10*12), (50000, 15*12)], 1.0/(12*10)) , ('house' ,[(100000, 10*12), (200000, 15*12), (400000, 25*12), (500000, 30*12)]), ('consumer_goods', [(500, 1), (1000, 3), (2000, 6), (3000, 12), (5000, 24)], 1.0/12)]
+    goals[('car',[(2000, 6), (8000, 4*12), (15000, 6*12), (25000, 10*12), (50000, 15*12)], 1.0/(12*10)) , ('house' ,[(100000, 10*12), (200000, 15*12), (400000, 25*12), (500000, 30*12)]), ('consumer_product, [(500, 1), (1000, 3), (2000, 6), (3000, 12), (5000, 24)], 1.0/12)]
     
     dice = random.uniform(0,1)
     for g in goals:
@@ -64,9 +64,19 @@ class State:
         typ = g[0]
         amount = expense[0]
         horizon = expense[1]
-        if  amount < self.income * horizon /0.7 
-          #make transaction
-          #make goal
+
+        if amount < self.income * horizon /0.7: 
+
+          print (" Buying type " + typ + " amount " + str(amount) + " horizon " + str(horizon) ) 
+
+          # make goal
+          start_date = self.date - horizon - 1
+          end_date = self.date
+          goal_id = py_mysql.insert_goal(self.con, self.customer_id, typ, amount, start_date, end_date)
+
+          # make transaction
+          py_mysql.insert_xact(self.con, self.customer_id, 'expenses', amount, goal_id)
+          
           pass
           break
 
