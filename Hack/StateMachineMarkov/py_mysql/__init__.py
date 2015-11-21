@@ -389,7 +389,7 @@ def get_db_list( con ):
 #     1 row in set (0.00 sec)
 #
 
-def insert_goal(con, customer_id_, type, amount):
+def insert_goal(con, customer_id_, type, amount, start_time, end_time):
 
 
   print ""
@@ -406,10 +406,10 @@ def insert_goal(con, customer_id_, type, amount):
 
 
   # Name of the columns to insert
-  col_names = [ 'type_id',  'customer_id', 'status_id', 'amount' ]
+  col_names = [ 'type_id',  'customer_id', 'status_id', 'amount', 'start_time', 'end_time' ]
 
   # Values to insert
-  values = [ type_id[type], customer_id_,  status_id['amber'], amount ]
+  values = [ type_id[type], customer_id_,  status_id['amber'], amount, start_time, end_time ]
 
 
   i = 0
@@ -435,8 +435,8 @@ def insert_goal(con, customer_id_, type, amount):
     #  mysql> insert into goals(type_id, customer_id, status_id, amount) values(5, 13, 4, 333);
 
     # insert into transactions(type_id, customer_id, goal_id, amount)  values(1, 13, 4, 12345.0);
-    query = "INSERT INTO goals(type_id, customer_id, status_id, amount) VALUES(%s, %s, %s, %s);" 
-    cur.execute(query, ( values[0], values[1], values[2],  values[3]) )
+    query = "INSERT INTO goals(type_id, customer_id, status_id, amount, start_time, end_time) VALUES(%s, %s, %s, %s, %s, %s);" 
+    cur.execute(query, ( values[0], values[1], values[2],  values[3], values[4], values[5]) )
 
     #print "Auto Increment ID: %s" % cur.lastrowid
     #print "Executed: %s" % cur._last_executed
@@ -480,47 +480,14 @@ def insert_goal(con, customer_id_, type, amount):
     pass
 
 
-  print "# insert_goal: goal_id = %i" % (val)
-  return goal_id
+  print "# insert_goal: goal_id = %i" % (goal_id)
+  return int(goal_id)
 
 
 
 # end insert_goal
 
 
-
-def subtract_from_date(date_, months_):
-
-  dd = int(date_)
-  mm = int(months_)
-
-  print "## date   = ", dd
-  print "## months = ", mm
-
-
-  sy = (mm / 12)* 100
-  sm = mm % 12
-  print "## sy  = ", sy
-  print "## sm  = ", sm
-
-
-  yy = dd - sy 
-  print "## yy1  = ", yy
-
-
-  Sm = yy % 100
-  print "## Sm  = ", Sm
-
-  if (Sm <= sm ):
-    yy = (yy - 100) + 12
-    print "## yy2  = ", yy
-
-  yy = yy - sm
-  print "## yy   = ", yy
-
-  return yy
-
-# end subtract
 
 
 
@@ -662,12 +629,11 @@ if __name__ == "__main__":
   # 6. Close connection
   #
   con.close()
-
-
+ 
   d1 = '201502'
-  m1 = 3
-  d2 = subtract_from_date(d1, m1)
-  print "# Subtract: " + d1 + " - " + str(m1) + " = " + str(d2)
+  #m1 = 3
+  #d2 = subtract_from_date(d1, m1)
+  #print "# Subtract: " + d1 + " - " + str(m1) + " = " + str(d2)
 
 
 

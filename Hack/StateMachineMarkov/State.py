@@ -1,5 +1,5 @@
 #
-# An abstract State class: has the run() operation, 
+# The base State class: has the run() operation, 
 # and can be moved into the next State 
 #
 
@@ -7,6 +7,59 @@ import random
 import py_mysql
 import datetime
 import dateutil.relativedelta as relativedelta
+
+
+
+def convert_2_datetime( date_ ):
+
+  d0 = date_
+  y = d0/100
+  m = d0%100
+  s = "%04i-%02i-01 00:00:01" % (y,m) 
+  #print "# s = ", s
+  return s
+
+
+
+
+def subtract_from_date(date_, months_):
+
+  dd = int(date_)
+  mm = int(months_)
+  #print "## date   = ", dd
+  #print "## months = ", mm
+
+
+  sy = (mm / 12)* 100
+  sm = mm % 12
+  #print "## sy  = ", sy
+  #print "## sm  = ", sm
+
+
+  yy = dd - sy 
+  #print "## yy1  = ", yy
+
+
+  Sm = yy % 100
+  print "## Sm  = ", Sm
+
+  if (Sm <= sm ):
+    yy = (yy - 100) + 12
+    #print "## yy2  = ", yy
+
+  yy = yy - sm
+  #print "## yy   = ", yy
+
+  return yy
+
+
+# end subtract_from_date
+
+
+
+
+
+
 
 class State:
 
@@ -56,11 +109,15 @@ class State:
 
 
     #(type, [(values, horizons)], prob)
-    goals[('car',[(2000, 6), (8000, 4*12), (15000, 6*12), (25000, 10*12), (50000, 15*12)], 1.0/(12*10)) , ('house' ,[(100000, 10*12), (200000, 15*12), (400000, 25*12), (500000, 30*12)]), ('consumer_product, [(500, 1), (1000, 3), (2000, 6), (3000, 12), (5000, 24)], 1.0/12)]
+    goals = [('car',              [(2000, 6),       (8000, 4*12),    (15000, 6*12),   (25000, 10*12), (50000, 15*12)], 1.0/(12*10)),  
+             ('house',            [(100000, 10*12), (200000, 15*12), (400000, 25*12), (500000, 30*12)],                1.0/(12*30)), 
+             ('consumer_product', [(500, 1),        (1000, 3),       (2000, 6),       (3000, 12),  (5000, 24)],        1.0/12)
+            ]
     
     dice = random.uniform(0,1)
     for g in goals:
-      if dice < g[2]:
+      #if dice < g[2]:
+      if dice >= g[2]:
         random.shuffle(g[1])
         expense = g[1][0]
         typ = g[0]
@@ -71,18 +128,31 @@ class State:
 
           print (" Buying type " + typ + " amount " + str(amount) + " horizon " + str(horizon) ) 
 
+          #
           # make goal
+          #
+
+          # Compute
           #start_date = self.date - horizon - 1
           y = self.date / 100
-          m = date % 100
+          m = self.date % 100
 
-          end = datetime.datetime(y, m, 01)
-          start = end + relativedelta.relativedelta(month = -horizon-1)
-          start_date = int(begin.strftime('%Y%m%'))
+          #end = datetime.datetime(y, m, 01)
+          #start = end + relativedelta.relativedelta(month = -horizon-1)
+          #start_date = int(begin.strftime('%Y%m%'))
           
-          goal_id = py_mysql.insert_goal(self.con, self.customer_id, typ, amount, start_date, end_date)
+          start_date = subtract_from_date(self.date, (horizon + 1) )
+          
+          start_time = convert_2_datetime( start_date )
+          end_time = convert_2_datetime( self.date )
 
+          goal_id = py_mysql.insert_goal(self.con, self.customer_id, typ, amount, start_time, end_time)
+
+
+
+          #
           # make transaction
+          #
           py_mysql.insert_xact(self.con, self.customer_id, 'expenses', amount, goal_id)
           
           pass
