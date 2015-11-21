@@ -53,6 +53,24 @@ class State:
       py_mysql.insert_xact(self.con, self.customer_id, 'expenses', self.expense)
 
 
+    #(type, [(values, horizons)], prob)
+    goals[('car',[(2000, 6), (8000, 4*12), (15000, 6*12), (25000, 10*12), (50000, 15*12)], 1.0/(12*10)) , ('house' ,[(100000, 10*12), (200000, 15*12), (400000, 25*12), (500000, 30*12)]), ('consumer_goods', [(500, 1), (1000, 3), (2000, 6), (3000, 12), (5000, 24)], 1.0/12)]
+    
+    dice = random.uniform(0,1)
+    for g in goals:
+      if dice < g[2]:
+        random.shuffle(g[1])
+        expense = g[1][0]
+        typ = g[0]
+        amount = expense[0]
+        horizon = expense[1]
+        if  amount < self.income * horizon /0.7 
+          #make transaction
+          #make goal
+          pass
+          break
+
+
   # implemented by subclasses
   def next(self, input):
     assert 0, "next not implemented"
