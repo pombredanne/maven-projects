@@ -51,10 +51,12 @@ class StateMachine:
     self.currentState = initialState
 
     # Invoke State.run()
-    self.currentState.run()
+    #self.currentState.run()
 
-  def runAll(self, timeline):
-    timeline = gen_timeline(200001, 8*12)
+
+  def runAll(self, date_, num_months_, customer_id_):
+
+    timeline = gen_timeline(date_, num_months_)
 
     
     for date in timeline:
@@ -71,8 +73,8 @@ class StateMachine:
 
       print("#---")
       print("# Time stamp %i, Income %i, Expense %i, Age %i" % (date, self.currentState.income, self.currentState.expense, years))
-      self.currentState = self.currentState.next({'dob':self.currentState.dob, 'date':date, 'income':self.currentState.income, 'expense':self.currentState.expense, 'alive':self.currentState.alive})
-      self.currentState.run()
+      self.currentState = self.currentState.next({'dob':self.currentState.dob, 'date':date, 'income':self.currentState.income, 'expense':self.currentState.expense, 'alive':self.currentState.alive, 'con': self.currentState.con})
+      self.currentState.run(customer_id_)
 
 
 
