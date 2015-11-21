@@ -1,6 +1,7 @@
 import random
 import string, sys
 import numpy as np
+import py_mysql
 
 sys.path += ['./stateMachine', './']
 
@@ -57,14 +58,10 @@ def randomStateChange(info, probs):
     print("#   graduate to retired")
     return Retired(info)
 
+
+
 class Start(State):
 
-  def run(self):
-    # Make a transaction
-    #print("# Run kid:")
-    pass
-
-    print("# Start next state: dob = %i" % self.dob)
 
     #
     # Check for time-events
@@ -105,11 +102,6 @@ class Kid(State):
   #
   # Stuff done in this state
   #
-
-  def run(self):
-    # Make a transaction
-    #print("# Run kid:")
-    pass
 
 
 
@@ -154,10 +146,6 @@ class Student(State):
     print info
     State.__init__(self, info)
 
-  def run(self):
-    # Make a transaction
-    #print("# Run Student")
-    pass
 
 
 
@@ -213,15 +201,25 @@ class Employed(State):
   income_std = 500
 
   def __init__(self,  info):
-    info['income'] = round(np.random.normal(self.income_avg, self.income_std))
-    info['expense'] = round(self.income_avg-200, self.income_std)
+    #info['income']  = int(round(np.random.normal(self.income_avg, self.income_std)))
+    tmp1 = int(round(np.random.normal(self.income_avg, self.income_std)))
+    info['income']  = tmp1
+    print (" avg    = ",  self.income_avg )
+    print (" std    =  ", self.income_std )
+    print (" income =  ", tmp1 )
+
+    #info['expense'] = round( self.income_avg-200, self.income_std)
+    #tmp2 = round( self.income_avg-200, self.income_std)
+    tmp2 =  self.income_avg - 200
+    info['expense'] = tmp2
+    print (" avg     = ",  self.income_avg - 200 )
+    print (" std     =  ", self.income_std )
+    print (" expense =  ", tmp2 )
+
     print info
     State.__init__(self, info)
 
 
-  def run(self):
-    #print("# Run employed: ")
-    pass
 
 
 
@@ -274,9 +272,6 @@ class Unemployed(State):
     print info
     State.__init__(self, info)
 
-  def run(self):
-    #print("# Run unemployed: ")
-    pass
  
 
 
@@ -310,9 +305,6 @@ class Unemployed(State):
 
 class Retired(State):
 
-  def run(self):
-    #print("# Run retired: ")
-    pass
 
   def __init__(self,  info):
     info['income'] = info['income']*0.7
@@ -361,10 +353,11 @@ class Driver(StateMachine):
 #
 
 # Map months to int 
-months = map(string.strip, open("./timeline/months.txt").readlines())
-mm = [ mo for mo in months if mo != '']
-months = map(int, mm)
-
+#months = map(string.strip, open("./timeline/months.txt").readlines())
+#mm = [ mo for mo in months if mo != '']
+#months = map(int, mm)
+num_months  = 12 * 8
+con = py_mysql.get_connection( "172.16.0.82", "one_ng")
 
 
 # 
@@ -377,9 +370,11 @@ months = map(int, mm)
 mob  = 199901
 
 # start date of simulation
-date = months[0]
+#date = months[0]
+date = 200001
 
-Driver.start       = Start({'dob':mob ,'date':date, 'income':0, 'expense':0})
+
+Driver.start        = Start( {'dob':mob ,'date':date, 'income':0, 'expense':0, 'con': con} )
 #Driver.kid         = Kid(mob, date)
 #Driver.student     = Student(mob, date)
 #Driver.employed    = Employed(mob, date)
@@ -404,5 +399,6 @@ Driver.start       = Start({'dob':mob ,'date':date, 'income':0, 'expense':0})
 #  5. Run the state machine through the timelines 
 #
 
-Driver().runAll( months )
+customer_id = 1
+Driver().runAll( date,  num_months, customer_id )
 

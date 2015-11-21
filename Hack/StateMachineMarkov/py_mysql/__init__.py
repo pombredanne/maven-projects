@@ -238,12 +238,14 @@ def insert( con, table, seq ):
   # 1. execute: 
   #     INSERT INTO con_data VALUES('11:33:66', '{\'abx\': 33 }');
   #
-
  
   try: 
+
     # 1.a
-    query = "INSERT INTO " + table + " VALUES(%s, %s, %s);" 
-    cur.execute(query, (seq[0], seq[1], seq[2]) )
+    # insert into transactions(type_id, customer_id, goal_id, amount)  values(1, 13, 4, 12345.0);
+    query = "INSERT INTO " + table + "(type_id, customer_id, goal_id, amount) VALUES(%s, %s, %s, %s);" 
+    cur.execute(query, (seq[0], seq[1], seq[2], seq[3]) )
+
 
     # 1.b
     #cur.execute("INSERT INTO " + table + "(label, json) VALUES(%s, %s, %s)", seq )
@@ -325,6 +327,20 @@ def get_db_list( con ):
 
 
 
+#
+#    insert_xact(customer_id, 'income', self.income)
+#    insert_xact(customer_id, 'expenses', self.expense)
+#
+def insert_xact(con, customer_id_, type, amount):
+
+  goal_id = 4
+  type_id = map_type_2_id( con, "transaction_type")
+  values = [ type_id[type], customer_id_,  goal_id,  amount ]
+  insert( con, "transactions",  values) 
+
+
+
+
 
 
 
@@ -365,26 +381,26 @@ if __name__ == "__main__":
   #
 
   # 3.1 transaction_type[type] = id 
-  type_2_id = map_type_2_id( con, "transaction_type")
-  for k, v in type_2_id.iteritems():
+  type_id = map_type_2_id( con, "transaction_type")
+  for k, v in type_id.iteritems():
     print  ("##  type_id[%s] =  %s" % (k, v) )
 
 
   # 3.2 goal_type[type] = id 
-  goal_2_id = map_type_2_id( con, "goal_type")
-  for k, v in goal_2_id.iteritems():
+  goal_id = map_type_2_id( con, "goal_type")
+  for k, v in goal_id.iteritems():
     print  ("##  goal_id[%s] =  %s" % (k, v) )
 
 
   # 3.3 cust_id[name] = id 
-  cust_id = map_attr_2_id( con, "customers", "name")
-  for k, v in cust_id.iteritems():
-    print  ("##  cust_id[%s] =  %s" % (k, v) )
+#  cust_id = map_attr_2_id( con, "customers", "name")
+#  for k, v in cust_id.iteritems():
+#    print  ("##  cust_id[%s] =  %s" % (k, v) )
 
 
   # 3.4 stat_id[name] = id 
-  stat_id = map_attr_2_id( con, "goal_status",  "status")
-  for k, v in stat_id.iteritems():
+  status_id = map_attr_2_id( con, "goal_status",  "status")
+  for k, v in status_id.iteritems():
     print  ("##  stat_id[%s] =  %s" % (k, v) )
 
 
@@ -400,15 +416,73 @@ if __name__ == "__main__":
 
   #
   # 5. Insert into DB table
-  # 
-  #insert( con, "transactions", [ '1234567890', '11:33:66', "{'abx': 33}" ] )
+  #
+  #  [
+  #    trans_type = { type_id['income'], type_id['expenses'],  type_id['on_hold'] }
+  #    cust_id    
+  #    goal_id = { goal_id['savings'], goal_id['car'], goal_id['house'], goal_id['pension'], goal_id['consumer_product'] }
+  #    amount
+  #    create_time
+  #  ]
+  #
 
-  
+  #
+  # 1. Created a default goal with id = 4 of type 5 (savings) and status 4 (amber)
+  #
+  #      type_id     = 5 # savings goal
+  #      customer_id = 1
+  #      type_id     = 4 # amber goal status
+  #            
+  #
+  #     mysql> insert into goals(type_id, customer_id, status_id) values(5, 1, 4);
+  #     Query OK, 1 row affected, 1 warning (0.01 sec)
+  #
+  #
+  #     mysql> select * from goals where customer_id = 1;
+  #     +----+---------+-------------+-----------+--------+---------------------+---------------------+---------------------+
+  #     | id | type_id | customer_id | status_id | amount | start_time          | end_time            | created_time        |
+  #     +----+---------+-------------+-----------+--------+---------------------+---------------------+---------------------+
+  #     |  4 |       5 |           1 |         4 |      0 | 0000-00-00 00:00:00 | 0000-00-00 00:00:00 | 2015-11-20 23:44:37 |
+  #     +----+---------+-------------+-----------+--------+---------------------+---------------------+---------------------+
+  #     1 row in set (0.00 sec)
+  #
+  #
+  #
+  # 2. Use the default goal to insert into transactions tabls
+  #
+  #     mysql> insert into transactions(type_id, customer_id, goal_id, amount)  values(1, 13, 4, 12345.0);
+  #     Query OK, 1 row affected (0.01 sec)
+  #
+  #     mysql> select * from transactions where customer_id = 13;
+  #     +----+---------+-------------+---------+--------+---------------------+
+  #     | id | type_id | customer_id | goal_id | amount | created_time        |
+  #     +----+---------+-------------+---------+--------+---------------------+
+  #     |  4 |       1 |          13 |       4 |  12345 | 2015-11-20 23:57:33 |
+  #     +----+---------+-------------+---------+--------+---------------------+
+  #     1 row in set (0.00 sec)
+  #
+
+
+  #     mysql> insert into transactions(type_id, customer_id, goal_id, amount)  values(1, 13, 4, 12345.0);
+
+  #insert( con, "transactions", [ '1234567890', '11:33:66', "{'abx': 33}" ] ) 
+
+  #customer_id = 13
+  goal_id = 4
+  # type
+  values = [ type_id['income'], customer_id,  goal_id, 2222.13 ]
+  insert( con, "transactions",  values) 
+
+
 
   #
   # 6. Close connection
   #
   con.close()
+
+
+
+
 
 
 
