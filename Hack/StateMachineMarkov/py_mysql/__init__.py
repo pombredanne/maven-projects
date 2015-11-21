@@ -489,6 +489,41 @@ def insert_goal(con, customer_id_, type, amount):
 
 
 
+def subtract_from_date(date_, months_):
+
+  dd = int(date_)
+  mm = int(months_)
+
+  print "## date   = ", dd
+  print "## months = ", mm
+
+
+  sy = (mm / 12)* 100
+  sm = mm % 12
+  print "## sy  = ", sy
+  print "## sm  = ", sm
+
+
+  yy = dd - sy 
+  print "## yy1  = ", yy
+
+
+  Sm = yy % 100
+  print "## Sm  = ", Sm
+
+  if (Sm <= sm ):
+    yy = (yy - 100) + 12
+    print "## yy2  = ", yy
+
+  yy = yy - sm
+  print "## yy   = ", yy
+
+  return yy
+
+# end subtract
+
+
+
 
 
 
@@ -615,10 +650,11 @@ if __name__ == "__main__":
   # goal_id = 4
   # type = type_id['income'] or type_id['expenses']
   #
+
   # values = [ type_id['income'], customer_id,  goal_id, 2222.13 ]
   #insert( con, "transactions",  values) 
 
-  insert_goal(con, 13, 'consumer_product', 4444)
+  #insert_goal(con, 13, 'consumer_product', 4444)
 
 
 
@@ -628,7 +664,10 @@ if __name__ == "__main__":
   con.close()
 
 
-
+  d1 = '201502'
+  m1 = 3
+  d2 = subtract_from_date(d1, m1)
+  print "# Subtract: " + d1 + " - " + str(m1) + " = " + str(d2)
 
 
 
